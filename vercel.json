@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "env": {
+    "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY": "@clerk_publishable_key",
+    "CLERK_API_KEY": "@clerk_api_key",
+    "CONVEX_URL": "@convex_url",
+    "CONVEX_KEY": "@convex_key",
+    "STRIPE_SECRET_KEY": "@stripe_secret_key",
+    "STRIPE_WEBHOOK_SECRET": "@stripe_webhook_secret",
+    "AWS_ACCESS_KEY_ID": "@aws_access_key_id",
+    "AWS_SECRET_ACCESS_KEY": "@aws_secret_access_key",
+    "S3_BUCKET": "@s3_bucket",
+    "AWS_REGION": "@aws_region"
+  }
+}
