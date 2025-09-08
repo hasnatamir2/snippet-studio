@@ -13,9 +13,12 @@ import type {
   FilterApi,
   FunctionReference,
 } from "convex/server";
+import type * as actions_stripe from "../actions/stripe.js";
 import type * as mutations_snippet from "../mutations/snippet.js";
+import type * as mutations_stripe from "../mutations/stripe.js";
 import type * as mutations_users from "../mutations/users.js";
 import type * as queries_snippets from "../queries/snippets.js";
+import type * as queries_user from "../queries/user.js";
 
 /**
  * A utility for referencing Convex functions in your app's API.
@@ -26,9 +29,12 @@ import type * as queries_snippets from "../queries/snippets.js";
  * ```
  */
 declare const fullApi: ApiFromModules<{
+  "actions/stripe": typeof actions_stripe;
   "mutations/snippet": typeof mutations_snippet;
+  "mutations/stripe": typeof mutations_stripe;
   "mutations/users": typeof mutations_users;
   "queries/snippets": typeof queries_snippets;
+  "queries/user": typeof queries_user;
 }>;
 export declare const api: FilterApi<
   typeof fullApi,

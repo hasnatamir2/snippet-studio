@@ -1,8 +1,8 @@
-// import { v } from "convex/values";
-// import { mutation } from "../_generated/server";
-// import Stripe from "stripe";
+import { v } from "convex/values";
+import { mutation } from "../_generated/server";
+import Stripe from "stripe";
 
-// const stripe = new Stripe(process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY!, {});
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {});
 
 // export const createCheckout = mutation({
 //   args: { priceId: v.string() },
