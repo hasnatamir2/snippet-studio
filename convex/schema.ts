@@ -26,7 +26,7 @@ export default defineSchema({
     isPublic: v.boolean(),
     createdAt: v.number(),
     updatedAt: v.number(),
-  }).index("by_userId", ["userId"]),
+  }).index("by_userId_createdAt", ["userId", "createdAt"]),
 
   snippetShares: defineTable({
     snippetId: v.id("snippets"),

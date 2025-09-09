@@ -5,6 +5,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { ConvexClientProvider } from "../components/convex/convex-client-provider";
 import { ConvexUserBootstrapper } from "@/components/convex/convex-user-bootstrapper";
 import { Header } from "@/components/header";
+import { Toaster } from "@/components/ui/sonner";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -32,6 +33,8 @@ export default function RootLayout({
                 <body
                     className={`${geistSans.variable} ${geistMono.variable} antialiased`}
                 >
+                    <Toaster />
+
                     <Header />
 
                     <ConvexClientProvider>

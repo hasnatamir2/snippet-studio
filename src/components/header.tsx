@@ -30,16 +30,16 @@ export async function Header() {
                     <span className='font-semibold'>Snippet Studio</span>
                 </Link>
                 {isAuth && (
-                    <Link href='/snippets' className='hover:underline'>
+                    <Link href='/snippets' className='cursor-pointer hover:underline'>
                         Your Snippets
                     </Link>
                 )}
                 {isAuth && (
-                    <Link href='/dashboard' className='hover:underline'>
+                    <Link href='/dashboard' className='cursor-pointer hover:underline'>
                         Dashboard
                     </Link>
                 )}
-                <Link href='/billing' className='hover:underline'>
+                <Link href='/billing' className='cursor-pointer hover:underline'>
                     Billing
                 </Link>
             </div>
