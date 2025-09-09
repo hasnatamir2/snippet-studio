@@ -1,6 +1,8 @@
 "use client";
 import { useState } from "react";
 import { useMutation } from "convex/react";
+import { toast } from "sonner";
+
 import { api } from "../../../convex/_generated/api";
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -19,6 +21,7 @@ export default function NewSnippetClient() {
             language: "javascript",
             isPublic: false,
         });
+        toast.success("Snippet created!");
         setTitle("");
         setBody("");
     }
