@@ -1,6 +1,7 @@
 "use client";
 import { useAuth } from "@clerk/nextjs";
 import { toast } from "sonner";
+import { Button } from "../ui/button";
 
 export function CancelButton() {
     const { getToken } = useAuth();
@@ -20,11 +21,11 @@ export function CancelButton() {
     };
 
     return (
-        <button
+        <Button
             onClick={handleCancel}
-            className='px-4 py-2 bg-red-600 text-white rounded w-full cursor-pointer hover:bg-red-700 transition'
+            className='bg-red-600 text-white w-full hover:bg-red-700'
         >
             Cancel Subscription
-        </button>
+        </Button>
     );
 }
