@@ -1,11 +1,28 @@
 "use client";
+import React from "react";
+import { useParams } from "next/navigation";
+import { useQuery } from "convex/react";
 
-import React from 'react'
+import { api } from "../../../../convex/_generated/api";
+import { Id } from "../../../../convex/_generated/dataModel";
+import NewSnippetClient from "@/components/snippets/create-snippet-form";
 
 const SnippetPage = () => {
-  return (
-    <div>Snippet</div>
-  )
-}
+    const params = useParams();
+    const snippetId = params.snippetId as string; // 👈 grab it here
+    const snippet = useQuery(api.queries.snippets.getSnippetById, {
+        snippetId: snippetId as Id<"snippets">,
+    });
 
-export default SnippetPage
+    if (!snippet) {
+        return <div>Loading...</div>;
+    }
+    console.log(snippet);
+    return (
+        <div className="w-1/2 mx-auto py-10">
+            <NewSnippetClient snippet={{...snippet}} />
+        </div>
+    );
+};
+
+export default SnippetPage;
