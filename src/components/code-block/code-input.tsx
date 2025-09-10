@@ -18,6 +18,7 @@ const CodeInput = ({
     onChange: (code: string) => void;
     language: string;
 }) => {
+
     const extensions = useMemo(() => {
         switch (language.toLowerCase()) {
             case "javascript":
