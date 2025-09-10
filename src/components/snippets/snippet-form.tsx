@@ -4,10 +4,10 @@ import { useMutation } from "convex/react";
 import { toast } from "sonner";
 import hljs from "highlight.js";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { iso, z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAuth } from "@clerk/nextjs"; // 👈 Clerk hook
-import { Copy } from "lucide-react";
+import { Copy, Lock } from "lucide-react";
 
 import { api } from "../../../convex/_generated/api";
 import { Input } from "@/components/ui/input";
@@ -45,7 +45,7 @@ const formSchema = z.object({
     isPublic: z.boolean(),
 });
 
-interface ISnippet {
+export interface ISnippet {
     _id: Id<"snippets">;
     _creationTime: number;
     tags?: string[] | undefined;
@@ -60,8 +60,10 @@ interface ISnippet {
 
 export default function SnippetModule({
     snippet,
+    isOwner = false
 }: {
     snippet?: ISnippet | null;
+    isOwner?: boolean
 }) {
     const { isSignedIn } = useAuth();
     const mode = snippet ? "edit" : "create";
@@ -81,7 +83,7 @@ export default function SnippetModule({
     const [code, codeLang] = form.watch(["content", "language"]);
 
     useEffect(() => {
-        if (code && codeLang) {
+        if (code && !codeLang) {
             const result = hljs.highlightAuto(code || "");
             const detectlang = result.language || "javascript";
             if (detectlang.toLowerCase() !== codeLang.toLowerCase()) {
@@ -90,8 +92,7 @@ export default function SnippetModule({
         }
     }, [code, codeLang, form]);
 
-    const onSubmit = (values: z.infer<typeof formSchema>) => {
-        console.log(values);
+    const onSubmit = async (values: z.infer<typeof formSchema>) => {
         if (mode === "edit" && snippet) {
             updateSnippet({
                 snippetId: snippet._id,
@@ -101,9 +102,19 @@ export default function SnippetModule({
             toast.success("Snippet updated!");
             return;
         } else {
-            createSnippet(values);
-            toast.success("Snippet created!");
-            form.reset();
+            try {
+                await createSnippet(values);
+                toast.success("Snippet saved!");
+                form.reset();
+            } catch (err: unknown) {
+                if (err instanceof Error && err.message.includes("limit")) {
+                    toast.error(
+                        "Free plan limit reached. Upgrade to Pro for unlimited snippets."
+                    );
+                } else {
+                    toast.error("Something went wrong");
+                }
+            }
         }
     };
 
@@ -114,13 +125,10 @@ export default function SnippetModule({
     };
     return (
         <div className='w-full'>
-            <div className='w-full flex justify-end gap-4'>
-                <Button
-                    onClick={copyToClipboard}
-                    className='float-right mb-2'
-                    disabled={!code}
-                >
-                    <Copy />
+            <div className='w-full flex justify-end gap-4 sticky top-2 z-50 p-1 bg-white/50 rounded-lg border items-center mb-2'>
+                {!isOwner && <Lock />}
+                <Button onClick={copyToClipboard} disabled={!code}>
+                    <Copy /> Copy to clipboard!
                 </Button>
             </div>
             <Form {...form}>
@@ -155,6 +163,7 @@ export default function SnippetModule({
                                             <Input
                                                 {...field}
                                                 placeholder='Title'
+                                                disabled={!isOwner}
                                             />
                                         </FormControl>
                                         <FormMessage />
@@ -168,7 +177,12 @@ export default function SnippetModule({
                             render={({ field }) => (
                                 <FormItem>
                                     <FormControl>
-                                        <Select {...field}>
+                                        <Select
+                                            onValueChange={field.onChange}
+                                            value={field.value}
+                                            defaultValue={field.value}
+                                            disabled={!isOwner}
+                                        >
                                             <SelectTrigger>
                                                 <SelectValue placeholder='Select language' />
                                             </SelectTrigger>
@@ -199,7 +213,7 @@ export default function SnippetModule({
                                                 checked={field.value}
                                                 onCheckedChange={field.onChange}
                                                 name={field.name}
-                                                disabled={field.disabled}
+                                                disabled={field.disabled || !isOwner}
                                                 ref={field.ref}
                                             />
                                         </FormControl>
@@ -213,7 +227,7 @@ export default function SnippetModule({
                         )}
                     </div>
                     {isSignedIn && (
-                        <Button className='btn' type='submit'>
+                        <Button className='btn' type='submit' disabled={!isOwner}>
                             {mode === "edit"
                                 ? "Update Snippet"
                                 : "Save Snippet"}

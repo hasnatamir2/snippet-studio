@@ -1,9 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { CodeBlock } from "../code-block/code-block";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardFooter } from "../ui/card";
 import { useRouter } from "next/navigation";
-import { Trash, Pencil, Lock, LockOpen } from "lucide-react";
+import { Trash, Pencil, Lock, LockOpen, Share, Copy, Link } from "lucide-react";
 import { useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import {
@@ -17,10 +16,18 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "../ui/alert-dialog";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { Input } from "../ui/input";
+import { toast } from "sonner";
+import { formatDate } from "@/lib/utils";
+import { ISnippet } from "./snippet-form";
 
-const SnippetCard = (snip: any) => {
+const SnippetCard = (snip: ISnippet) => {
     const router = useRouter();
     const deleteSnippet = useMutation(api.mutations.snippet.deleteSnippet);
+    const toggleSnippetVisibility = useMutation(
+        api.mutations.snippet.toggleSnippetVisibility
+    );
 
     const editSnippet = () => {
         router.push(`/snippets/${snip._id}`);
@@ -30,8 +37,23 @@ const SnippetCard = (snip: any) => {
         await deleteSnippet({ snippetId: snip._id, userId: snip.userId });
     };
 
+    const snippetShareLink = `${process.env.NEXT_PUBLIC_APP_URL}/snippets/${snip._id}`;
+
+    const copyToClipboard = () => {
+        navigator.clipboard.writeText(snippetShareLink);
+        toast.success("Link copied to clipboard!");
+    };
+
+    const updateVisibilty = async () => {
+        await toggleSnippetVisibility({
+            snippetId: snip._id,
+            userId: snip.userId,
+        });
+        toast.success("Snippet visibility updated!");
+    };
+
     return (
-        <Card className='snippet-card md:w-xl relative py-0 gap-1'>
+        <Card className='snippet-card relative py-0 gap-1'>
             <CardContent className='h-40 overflow-scroll px-0 rounded-tr-lg rounded-tl-lg'>
                 <pre className='absolute text-xs right-0 px-2 bg-gray-300 rounded-tr-lg font-medium'>
                     {snip.language}
@@ -40,23 +62,14 @@ const SnippetCard = (snip: any) => {
             </CardContent>
             <CardFooter className='text-xs gap-2 justify-between items-center'>
                 <div className='justify-between items-center flex'>
-                    <code>{snip.title}</code>
+                    <code className=''>{snip.title}</code>
 
-                    <Button
-                        variant='link'
-                        size='sm'
-                        className='text-xs'
-                        onClick={editSnippet}
-                    >
+                    <Button variant='link' size='sm' onClick={editSnippet}>
                         <Pencil />
                     </Button>
                     <AlertDialog>
                         <AlertDialogTrigger>
-                            <Button
-                                variant='link'
-                                size='sm'
-                                className='text-xs'
-                            >
+                            <Button variant='link' size='sm'>
                                 <Trash />
                             </Button>
                         </AlertDialogTrigger>
@@ -78,14 +91,44 @@ const SnippetCard = (snip: any) => {
                             </AlertDialogFooter>
                         </AlertDialogContent>
                     </AlertDialog>
-                    {snip.isPublic ? (
-                        <LockOpen className='ml-2 w-4 h-4' />
-                    ) : (
-                        <Lock className='ml-2 w-4 h-4' />
-                    )}
+                    <Button variant='link' size='sm' onClick={updateVisibilty}>
+                        {snip.isPublic ? (
+                            <LockOpen className='w-4 h-4' />
+                        ) : (
+                            <Lock className='w-4 h-4 ' />
+                        )}
+                    </Button>
+                    <Popover>
+                        <PopoverTrigger
+                            className={`px-2.5 ${snip.isPublic && "cursor-pointer"}`}
+                            disabled={!snip.isPublic}
+                        >
+                            <Share
+                                className={`w-4 h-4 ${!snip.isPublic && "text-gray-500"}`}
+                            />
+                        </PopoverTrigger>
+                        <PopoverContent className='md:w-96'>
+                            <div className='flex items-center gap-1'>
+                                <Input
+                                    id='share-link'
+                                    defaultValue={snippetShareLink}
+                                    disabled
+                                    className='col-span-3 h-8'
+                                />
+                                <Button
+                                    className='col-span-1'
+                                    size='sm'
+                                    variant='outline'
+                                    onClick={copyToClipboard}
+                                >
+                                    <Link />
+                                </Button>
+                            </div>
+                        </PopoverContent>
+                    </Popover>
                 </div>
                 <p className='text-[10px]'>
-                    Updated at {new Date(snip.updatedAt).toLocaleString()}
+                    Updated at {formatDate(snip.updatedAt)}
                 </p>
             </CardFooter>
         </Card>
