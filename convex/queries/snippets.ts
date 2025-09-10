@@ -39,10 +39,16 @@ export const getPublicSnippetCount = query({
     args: {},
     handler: async (ctx) => {
         const identity = await ctx.auth.getUserIdentity();
+        if (!identity || !identity.subject) return 0;
+        
+        const user = await ctx.db
+            .query("users")
+            .withIndex("by_clerkId", (q) => q.eq("clerkId", identity.subject))
+            .first();
         const snippets = await ctx.db
             .query("snippets")
+            .filter((q) => q.eq(q.field("userId"), user?._id))
             .filter((q) => q.eq(q.field("isPublic"), true))
-            .filter((q) => q.eq(q.field("userId"), identity?.subject))
             .order("desc")
             .collect();
         return snippets.length;
@@ -53,11 +59,16 @@ export const getPrivateSnippetCount = query({
     args: {},
     handler: async (ctx) => {
         const identity = await ctx.auth.getUserIdentity();
+        if (!identity || !identity.subject) return 0;
 
+        const user = await ctx.db
+            .query("users")
+            .withIndex("by_clerkId", (q) => q.eq("clerkId", identity.subject))
+            .first();
         const snippets = await ctx.db
             .query("snippets")
+            .filter((q) => q.eq(q.field("userId"), user?._id))
             .filter((q) => q.eq(q.field("isPublic"), false))
-            .filter((q) => q.eq(q.field("userId"), identity?.subject))
             .order("desc")
             .collect();
         return snippets.length;
