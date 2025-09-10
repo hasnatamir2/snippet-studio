@@ -28,7 +28,12 @@ export const getSnippetById = query({
 
         // Public snippets are visible to everyone
         if (snippet.isPublic) return snippet;
-        if (!identity || identity.subject !== snippet.userId) {
+        if (!identity) return null;
+        const user = await ctx.db
+            .query("users")
+            .withIndex("by_clerkId", (q) => q.eq("clerkId", identity.subject))
+            .first();
+        if (!identity || user?._id !== snippet.userId) {
             return null;
         }
         return snippet;
