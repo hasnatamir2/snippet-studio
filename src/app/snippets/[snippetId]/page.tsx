@@ -17,6 +17,9 @@ const SnippetPage = () => {
     const snippet = useQuery(api.queries.snippets.getSnippetById, {
         snippetId: snippetId as Id<"snippets">,
     });
+    const dbUser = useQuery(api.queries.user.getUserByClerkId, {
+        clerkId: userId || "",
+    });
     // While query is loading
     if (snippet === undefined) {
         return <div>Loading snippet...</div>;
@@ -39,7 +42,7 @@ const SnippetPage = () => {
         "title" in snippet &&
         "content" in snippet;
 
-    const isOwner = isSnippet && userId === (snippet as ISnippet).userId;
+    const isOwner = isSnippet && dbUser?._id === (snippet as ISnippet).userId;
 
     return (
         <div className='w-1/2 mx-auto py-10'>
