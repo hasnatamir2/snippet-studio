@@ -1,19 +1,21 @@
+"use client";
+
 import { CancelButton } from "@/components/stripe/cancel-sub-button";
 import { SubscribeButton } from "@/components/stripe/subscribe-button";
-import { currentUser } from "@clerk/nextjs/server";
 import { Card, CardContent, CardFooter, CardTitle } from "@/components/ui/card";
 import React from "react";
-import { fetchQuery } from "convex/nextjs";
 import { api } from "../../../convex/_generated/api";
+import { useAuth } from "@clerk/nextjs";
+import { useQuery } from "convex/react";
 
-const BillingPage = async () => {
-    const user = await currentUser();
-    if (!user) {
+const BillingPage = () => {
+    const { userId } = useAuth();
+    const dbUser = useQuery(api.queries.user.getUserByClerkId, {
+        clerkId: userId || ""
+    });
+    if (!userId) {
         return null;
     }
-    const dbUser = await fetchQuery(api.queries.user.getUserByClerkId, {
-        clerkId: user.id,
-    });
 
     return (
         <div className='md:my-16 my-4 px-4 text-center'>
