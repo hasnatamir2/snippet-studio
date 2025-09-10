@@ -14,6 +14,7 @@ export const _getUserByClerkId = internalQuery({
 export const getUserByClerkId = query({
   args: { clerkId: v.string() },
   handler: async (ctx, { clerkId }) => {
+    if (!clerkId) return null;
     return await ctx.db
       .query("users")
       .filter((q) => q.eq(q.field("clerkId"), clerkId))

@@ -5,10 +5,7 @@ import { action } from "../_generated/server";
 import { internal } from "../_generated/api";
 import Stripe from "stripe";
 
-const stripe = new Stripe(
-    process.env.STRIPE_SECRET_KEY as string,
-    {}
-);
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {});
 
 export const webhook = action({
     handler: async (
@@ -21,9 +18,10 @@ export const webhook = action({
             sig: string | string[] | Buffer<ArrayBufferLike>;
         }
     ) => {
+        const rawBody = Buffer.isBuffer(body) ? body : Buffer.from(body);
         const event = stripe.webhooks.constructEvent(
-            body,
-            sig,
+            rawBody,
+            sig as string,
             process.env.STRIPE_WEBHOOK_SECRET!
         );
 
@@ -112,8 +110,8 @@ export const createCheckout = action({
             payment_method_types: ["card"],
             line_items: [{ price: priceId, quantity: 1 }],
             customer: customerId,
-            success_url: `${process.env.APP_URL}/billing?payment=success`,
-            cancel_url: `${process.env.APP_URL}/billing?payment=cancel`,
+            success_url: `${process.env.APP_URL}/`,
+            cancel_url: `${process.env.APP_URL}/billing`,
         });
 
         return { url: session.url };

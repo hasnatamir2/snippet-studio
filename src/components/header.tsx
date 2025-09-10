@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import {
     SignInButton,
@@ -5,9 +7,9 @@ import {
     SignedIn,
     SignedOut,
     UserButton,
+    useAuth,
 } from "@clerk/nextjs";
 import Link from "next/link";
-import { auth } from "@clerk/nextjs/server";
 import {
     NavigationMenu,
     NavigationMenuItem,
@@ -15,8 +17,8 @@ import {
     navigationMenuTriggerStyle,
 } from "./ui/navigation-menu";
 
-export async function Header() {
-    const isAuth = (await auth()).isAuthenticated;
+export function Header() {
+    const isAuth = useAuth();
 
     return (
         <header className='flex h-16 items-center justify-between gap-4 border-b px-4'>
