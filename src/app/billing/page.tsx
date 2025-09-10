@@ -8,7 +8,6 @@ import { api } from "../../../convex/_generated/api";
 
 const BillingPage = async () => {
     const user = await currentUser();
-
     if (!user) {
         return null;
     }

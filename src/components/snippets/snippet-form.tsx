@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAuth } from "@clerk/nextjs"; // 👈 Clerk hook
-import { Copy, Share } from "lucide-react";
+import { Copy } from "lucide-react";
 
 import { api } from "../../../convex/_generated/api";
 import { Input } from "@/components/ui/input";
@@ -31,8 +31,6 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 import { Id } from "../../../convex/_generated/dataModel";
-// import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-// import { Label } from "../ui/label";
 
 const formSchema = z.object({
     title: z.string().min(2, {
@@ -60,12 +58,12 @@ interface ISnippet {
     updatedAt: number;
 }
 
-export default function NewSnippetClient({
+export default function SnippetModule({
     snippet,
 }: {
-    snippet: ISnippet | null;
+    snippet?: ISnippet | null;
 }) {
-    const { isSignedIn } = useAuth(); // 👈 check if user is logged in
+    const { isSignedIn } = useAuth();
     const mode = snippet ? "edit" : "create";
     const createSnippet = useMutation(api.mutations.snippet.createSnippet);
     const updateSnippet = useMutation(api.mutations.snippet.updateSnippet);
@@ -124,37 +122,6 @@ export default function NewSnippetClient({
                 >
                     <Copy />
                 </Button>
-                {/* <Popover>
-                    <PopoverTrigger disabled={!ispublic}>
-                        <Button
-                            className='float-right mb-2'
-                            disabled={!ispublic}
-                        >
-                            <Share />
-                        </Button>
-                    </PopoverTrigger>
-                    <PopoverContent>
-                        <div className='grid gap-4'>
-                            <div className='space-y-2'>
-                                <h4 className='leading-none font-medium'>
-                                    Share Snippet
-                                </h4>
-                            </div>
-                            <div className='grid gap-2'>
-                                <div className='grid grid-cols-3 items-center gap-4'>
-                                    <Input
-                                        id='link'
-                                        defaultValue={`${process.env.NEXT_PUBLIC_BASE_URL}/snippets/[snippetId]`}
-                                        className='col-span-2 h-8'
-                                        disabled
-                                    />
-                                    <Button className='h-8'>Copy</Button
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                    </PopoverContent>
-                </Popover> */}
             </div>
             <Form {...form}>
                 <form
@@ -169,7 +136,7 @@ export default function NewSnippetClient({
                                 <FormControl>
                                     <CodeInput
                                         code={field.value}
-                                        langExt={UniqueLangs}
+                                        language={form.getValues("language")}
                                         {...field}
                                     />
                                 </FormControl>
@@ -247,7 +214,9 @@ export default function NewSnippetClient({
                     </div>
                     {isSignedIn && (
                         <Button className='btn' type='submit'>
-                            Save Snippet
+                            {mode === "edit"
+                                ? "Update Snippet"
+                                : "Save Snippet"}
                         </Button>
                     )}
                 </form>
