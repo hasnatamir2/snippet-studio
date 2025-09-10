@@ -67,8 +67,10 @@ export const updateSnippet = mutation({
         userId: v.id("users"),
         title: v.string(),
         content: v.string(),
+        language: v.string(),
+        isPublic: v.boolean(),
     },
-    handler: async (ctx, { snippetId, userId, title, content }) => {
+    handler: async (ctx, { snippetId, userId, title, content, isPublic, language }) => {
         const snippet = await ctx.db.get(snippetId);
         if (!snippet) {
             throw new Error("Snippet not found");
@@ -79,6 +81,8 @@ export const updateSnippet = mutation({
         await ctx.db.patch(snippetId, {
             title,
             content,
+            language,
+            isPublic,
             updatedAt: Date.now(),
         });
         await ctx.db.insert("auditLogs", {
