@@ -1,5 +1,5 @@
 import { mutation } from "../_generated/server";
-import { v } from "convex/values";
+import { ConvexError, v } from "convex/values";
 
 export const createSnippet = mutation({
     args: {
@@ -11,7 +11,7 @@ export const createSnippet = mutation({
     handler: async (ctx, { title, content, language, isPublic }) => {
         const now = Date.now();
         const clerkUserId = await ctx.auth.getUserIdentity();
-        if (!clerkUserId) throw new Error("Not authenticated");
+        if (!clerkUserId) throw new ConvexError("Not authenticated");
 
         const user = await ctx.db
             .query("users")
@@ -20,7 +20,20 @@ export const createSnippet = mutation({
             )
             .first();
 
-        if (!user) throw new Error("User not found in Convex");
+        if (!user) throw new ConvexError("User not found in Convex");
+
+        // Count snippets
+        const snippetCount = await ctx.db
+            .query("snippets")
+            .filter((q) => q.eq(q.field("userId"), user._id))
+            .collect()
+            .then((snips) => snips.length);
+
+        if (user.subscriptionTier !== "pro" && snippetCount >= 9) {
+            throw new ConvexError(
+                "Free plan limit reached. Upgrade to Pro for unlimited snippets."
+            );
+        }
 
         const snippetId = await ctx.db.insert("snippets", {
             userId: user._id,
@@ -46,10 +59,10 @@ export const deleteSnippet = mutation({
     handler: async (ctx, { snippetId, userId }) => {
         const snippet = await ctx.db.get(snippetId);
         if (!snippet) {
-            throw new Error("Snippet not found");
+            throw new ConvexError("Snippet not found");
         }
         if (snippet.userId !== userId) {
-            throw new Error("Not authorized to delete this snippet");
+            throw new ConvexError("Not authorized to delete this snippet");
         }
         await ctx.db.delete(snippetId);
         await ctx.db.insert("auditLogs", {
@@ -70,13 +83,16 @@ export const updateSnippet = mutation({
         language: v.string(),
         isPublic: v.boolean(),
     },
-    handler: async (ctx, { snippetId, userId, title, content, isPublic, language }) => {
+    handler: async (
+        ctx,
+        { snippetId, userId, title, content, isPublic, language }
+    ) => {
         const snippet = await ctx.db.get(snippetId);
         if (!snippet) {
-            throw new Error("Snippet not found");
+            throw new ConvexError("Snippet not found");
         }
         if (snippet.userId !== userId) {
-            throw new Error("Not authorized to update this snippet");
+            throw new ConvexError("Not authorized to update this snippet");
         }
         await ctx.db.patch(snippetId, {
             title,
@@ -99,10 +115,12 @@ export const toggleSnippetVisibility = mutation({
     handler: async (ctx, { snippetId, userId }) => {
         const snippet = await ctx.db.get(snippetId);
         if (!snippet) {
-            throw new Error("Snippet not found");
+            throw new ConvexError("Snippet not found");
         }
         if (snippet.userId !== userId) {
-            throw new Error("Not authorized to change visibility of this snippet");
+            throw new ConvexError(
+                "Not authorized to change visibility of this snippet"
+            );
         }
         await ctx.db.patch(snippetId, {
             isPublic: !snippet.isPublic,
@@ -113,6 +131,6 @@ export const toggleSnippetVisibility = mutation({
             action: "toggle_snippet_visibility",
             metadata: { snippetId, newVisibility: !snippet.isPublic },
             createdAt: Date.now(),
-        }); 
-    }
+        });
+    },
 });

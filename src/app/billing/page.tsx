@@ -16,9 +16,9 @@ const BillingPage = async () => {
     });
 
     return (
-        <div className='text-center mt-20'>
-            <h2>Manage your Subscription</h2>
-            <p>
+        <div className='md:my-16 my-4 px-4 text-center'>
+            <h2 className='md:text-4xl text-2xl font-bold'>Manage your Subscription</h2>
+            <p className="mt-4 text-sm">
                 Billing details and subscription management will be handled
                 here.
             </p>

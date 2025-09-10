@@ -1,5 +1,6 @@
 "use client";
 import { useAuth } from "@clerk/nextjs";
+import { Button } from "../ui/button";
 
 export function SubscribeButton() {
     const { getToken } = useAuth();
@@ -21,11 +22,11 @@ export function SubscribeButton() {
     };
 
     return (
-        <button
+        <Button
             onClick={handleClick}
-            className='px-4 py-2 bg-blue-600 text-white rounded w-full cursor-pointer hover:bg-blue-700'
+            className='bg-blue-600 text-white w-full hover:bg-blue-700'
         >
             Subscribe
-        </button>
+        </Button>
     );
 }

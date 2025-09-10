@@ -1,21 +1,11 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import { ConvexClientProvider } from "../components/convex/convex-client-provider";
 import { ConvexUserBootstrapper } from "@/components/convex/convex-user-bootstrapper";
 import { Header } from "@/components/header";
 import { Toaster } from "@/components/ui/sonner";
-
-const geistSans = Geist({
-    variable: "--font-geist-sans",
-    subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-    variable: "--font-geist-mono",
-    subsets: ["latin"],
-});
+import { ErrorBoundary } from "@/components/error-boudary";
 
 export const metadata: Metadata = {
     title: "Snippet Studio",
@@ -30,17 +20,15 @@ export default function RootLayout({
     return (
         <ClerkProvider>
             <html lang='en'>
-                <body
-                    className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-                >
-                    <Toaster />
-
-                    <Header />
-
-                    <ConvexClientProvider>
-                        <ConvexUserBootstrapper />
-                        {children}
-                    </ConvexClientProvider>
+                <body>
+                    <ErrorBoundary>
+                        <ConvexClientProvider>
+                            <Toaster />
+                            <ConvexUserBootstrapper />
+                            <Header />
+                            {children}
+                        </ConvexClientProvider>
+                    </ErrorBoundary>
                 </body>
             </html>
         </ClerkProvider>

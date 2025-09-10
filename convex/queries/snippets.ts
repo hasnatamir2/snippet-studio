@@ -9,7 +9,7 @@ export const getSnippets = query({
             .withIndex("by_clerkId", (q) => q.eq("clerkId", clerkId))
             .first();
 
-        if (!user) throw new Error("User not found in Convex");
+        if (!user) throw null;
         const snippets = await ctx.db
             .query("snippets")
             .filter((q) => q.eq(q.field("userId"), user._id))
@@ -22,8 +22,15 @@ export const getSnippets = query({
 export const getSnippetById = query({
     args: { snippetId: v.id("snippets") },
     handler: async (ctx, { snippetId }) => {
+        const identity = await ctx.auth.getUserIdentity();
         const snippet = await ctx.db.get(snippetId);
-        if (!snippet) throw new Error("Snippet not found");
+        if (!snippet) return null;
+
+        // Public snippets are visible to everyone
+        if (snippet.isPublic) return snippet;
+        if (!identity || identity.subject !== snippet.userId) {
+            return null;
+        }
         return snippet;
     },
 });
@@ -31,9 +38,11 @@ export const getSnippetById = query({
 export const getPublicSnippetCount = query({
     args: {},
     handler: async (ctx) => {
+        const identity = await ctx.auth.getUserIdentity();
         const snippets = await ctx.db
             .query("snippets")
             .filter((q) => q.eq(q.field("isPublic"), true))
+            .filter((q) => q.eq(q.field("userId"), identity?.subject))
             .order("desc")
             .collect();
         return snippets.length;
@@ -41,6 +50,21 @@ export const getPublicSnippetCount = query({
 });
 
 export const getPrivateSnippetCount = query({
+    args: {},
+    handler: async (ctx) => {
+        const identity = await ctx.auth.getUserIdentity();
+
+        const snippets = await ctx.db
+            .query("snippets")
+            .filter((q) => q.eq(q.field("isPublic"), false))
+            .filter((q) => q.eq(q.field("userId"), identity?.subject))
+            .order("desc")
+            .collect();
+        return snippets.length;
+    },
+});
+
+export const getUsage = query({
     args: { clerkId: v.string() },
     handler: async (ctx, { clerkId }) => {
         const user = await ctx.db
@@ -48,12 +72,16 @@ export const getPrivateSnippetCount = query({
             .withIndex("by_clerkId", (q) => q.eq("clerkId", clerkId))
             .first();
 
-        if (!user) throw new Error("User not found in Convex");
+        if (!user) throw null;
+
         const snippets = await ctx.db
             .query("snippets")
-            .filter((q) => q.eq(q.field("isPublic"), false))
-            .order("desc")
+            .filter((q) => q.eq(q.field("userId"), user._id))
             .collect();
-        return snippets.length;
+
+        return {
+            count: snippets.length,
+            limit: user.subscriptionTier === "pro" ? Infinity : 9,
+        };
     },
 });
