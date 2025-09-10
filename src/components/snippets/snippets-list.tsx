@@ -40,7 +40,7 @@ export default function SnippetsListClient() {
                     <span className='text-xl'>{privateSnippetCount || 0}</span>
                 </p>
             </div>
-            {snippets.length > 0 ? (
+            {snippets && snippets.length > 0 ? (
                 <ul className='mt-6 grid xl:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-2 flex-wrap w-full'>
                     {snippets.map((s: ISnippet) => (
                         <li key={s._id} className='col-span-1'>
