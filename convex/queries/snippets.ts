@@ -9,7 +9,7 @@ export const getSnippets = query({
             .withIndex("by_clerkId", (q) => q.eq("clerkId", clerkId))
             .first();
 
-        if (!user) throw null;
+        if (!user) return null;
         const snippets = await ctx.db
             .query("snippets")
             .filter((q) => q.eq(q.field("userId"), user._id))
@@ -72,7 +72,7 @@ export const getUsage = query({
             .withIndex("by_clerkId", (q) => q.eq("clerkId", clerkId))
             .first();
 
-        if (!user) throw null;
+        if (!user) return null;
 
         const snippets = await ctx.db
             .query("snippets")
