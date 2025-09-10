@@ -60,3 +60,59 @@ export const deleteSnippet = mutation({
         });
     },
 });
+
+export const updateSnippet = mutation({
+    args: {
+        snippetId: v.id("snippets"),
+        userId: v.id("users"),
+        title: v.string(),
+        content: v.string(),
+        language: v.string(),
+        isPublic: v.boolean(),
+    },
+    handler: async (ctx, { snippetId, userId, title, content, isPublic, language }) => {
+        const snippet = await ctx.db.get(snippetId);
+        if (!snippet) {
+            throw new Error("Snippet not found");
+        }
+        if (snippet.userId !== userId) {
+            throw new Error("Not authorized to update this snippet");
+        }
+        await ctx.db.patch(snippetId, {
+            title,
+            content,
+            language,
+            isPublic,
+            updatedAt: Date.now(),
+        });
+        await ctx.db.insert("auditLogs", {
+            userId,
+            action: "update_snippet",
+            metadata: { snippetId },
+            createdAt: Date.now(),
+        });
+    },
+});
+
+export const toggleSnippetVisibility = mutation({
+    args: { snippetId: v.id("snippets"), userId: v.id("users") },
+    handler: async (ctx, { snippetId, userId }) => {
+        const snippet = await ctx.db.get(snippetId);
+        if (!snippet) {
+            throw new Error("Snippet not found");
+        }
+        if (snippet.userId !== userId) {
+            throw new Error("Not authorized to change visibility of this snippet");
+        }
+        await ctx.db.patch(snippetId, {
+            isPublic: !snippet.isPublic,
+            updatedAt: Date.now(),
+        });
+        await ctx.db.insert("auditLogs", {
+            userId,
+            action: "toggle_snippet_visibility",
+            metadata: { snippetId, newVisibility: !snippet.isPublic },
+            createdAt: Date.now(),
+        }); 
+    }
+});

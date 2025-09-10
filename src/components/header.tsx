@@ -8,6 +8,12 @@ import {
 } from "@clerk/nextjs";
 import Link from "next/link";
 import { auth } from "@clerk/nextjs/server";
+import {
+    NavigationMenu,
+    NavigationMenuItem,
+    NavigationMenuList,
+    navigationMenuTriggerStyle,
+} from "./ui/navigation-menu";
 
 export async function Header() {
     const isAuth = (await auth()).isAuthenticated;
@@ -29,19 +35,28 @@ export async function Header() {
                     </svg>
                     <span className='font-semibold'>Snippet Studio</span>
                 </Link>
-                {isAuth && (
-                    <Link href='/snippets' className='hover:underline'>
-                        Your Snippets
-                    </Link>
-                )}
-                {isAuth && (
-                    <Link href='/dashboard' className='hover:underline'>
-                        Dashboard
-                    </Link>
-                )}
-                <Link href='/billing' className='hover:underline'>
-                    Billing
-                </Link>
+                <NavigationMenu>
+                    <NavigationMenuList>
+                        <NavigationMenuItem asChild>
+                            {isAuth && (
+                                <Link
+                                    href='/dashboard'
+                                    className={navigationMenuTriggerStyle()}
+                                >
+                                    Dashboard
+                                </Link>
+                            )}
+                        </NavigationMenuItem>
+                        <NavigationMenuItem asChild>
+                            <Link
+                                href='/billing'
+                                className={navigationMenuTriggerStyle()}
+                            >
+                                Billing
+                            </Link>
+                        </NavigationMenuItem>
+                    </NavigationMenuList>
+                </NavigationMenu>
             </div>
             <div className='flex items-center gap-x-4'>
                 <SignedOut>
