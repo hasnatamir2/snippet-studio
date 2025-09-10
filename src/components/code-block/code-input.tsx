@@ -18,6 +18,7 @@ const CodeInput = ({
     onChange: (code: string) => void;
     language: string;
 }) => {
+
     const extensions = useMemo(() => {
         switch (language.toLowerCase()) {
             case "javascript":
@@ -37,20 +38,20 @@ const CodeInput = ({
     }, [language]);
 
     return (
-        <div className='relative'>
+        <div className='relative overflow-scroll'>
             <CodeMirror
                 value={code}
                 onChange={onChange}
                 minHeight='200px'
                 theme={oneDark}
                 basicSetup={{
-                    foldGutter: false,
                     dropCursor: false,
-                    allowMultipleSelections: false,
-                    indentOnInput: false,
+                    allowMultipleSelections: true,
+                    indentOnInput: true,
+                    foldKeymap: true
                 }}
                 extensions={extensions}
-                className='rounded-lg border overflow-clip text-left'
+                className='rounded-lg border overflow-clip text-left w-full'
             />
         </div>
     );

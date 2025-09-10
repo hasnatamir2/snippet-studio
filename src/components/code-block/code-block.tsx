@@ -12,8 +12,18 @@ export function CodeBlock({
     language: string;
 }) {
     const codeRef = useRef<HTMLElement>(null);
+
     useEffect(() => {
         if (codeRef.current) {
+            // reset old highlight
+            codeRef.current.removeAttribute("data-highlighted");
+            codeRef.current.classList.remove(
+                ...Array.from(codeRef.current.classList).filter((c) =>
+                    c.startsWith("hljs")
+                )
+            );
+
+            // re-highlight
             hljs.highlightElement(codeRef.current);
         }
     }, [code, language]);

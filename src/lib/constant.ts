@@ -30,3 +30,5 @@ export const UniqueLangs = Array.from(
         "sql",
     ])
 );
+
+export const MAX_FREE_SNIPPETS = 9;
