@@ -58,3 +58,4 @@ jobs:
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
           working-directory: ./
           prod: true   # deploy to production
+          confirm: true  # ensures deployment is triggered even if Vercel asks for confirmation
