@@ -77,7 +77,7 @@ npx convex dev
 ```
 ### 5. Start App
 ```bash
-yarn dev //(frontend+backend): 
-frontend(standalone): yarn dev:frontend
-backend convex(standalone): yarn dev:backend
+yarn dev #(frontend+backend)
+yarn dev:frontend #frontend(standalone)
+yarn dev:backend #backend convex(standalone)
 ```
