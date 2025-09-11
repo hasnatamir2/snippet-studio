@@ -6,6 +6,8 @@ import { ConvexUserBootstrapper } from "@/components/convex/convex-user-bootstra
 import { Header } from "@/components/header";
 import { Toaster } from "@/components/ui/sonner";
 import { ErrorBoundary } from "@/components/error-boudary";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/app-sidebar/sidebar";
 
 export const metadata: Metadata = {
     title: "Snippet Studio",
@@ -19,18 +21,23 @@ export default function RootLayout({
 }>) {
     return (
         <ClerkProvider>
-            <html lang='en'>
-                <body>
-                    <ErrorBoundary>
-                        <ConvexClientProvider>
-                            <Toaster />
-                            <ConvexUserBootstrapper />
-                            <Header />
-                            {children}
-                        </ConvexClientProvider>
-                    </ErrorBoundary>
-                </body>
-            </html>
+            <SidebarProvider>
+                <html lang='en'>
+                    <AppSidebar />
+                    <body>
+                        <ErrorBoundary>
+                            <ConvexClientProvider>
+                                <Toaster />
+                                <ConvexUserBootstrapper />
+                                <SidebarInset>
+                                    <Header />
+                                    {children}
+                                </SidebarInset>
+                            </ConvexClientProvider>
+                        </ErrorBoundary>
+                    </body>
+                </html>
+            </SidebarProvider>
         </ClerkProvider>
     );
 }
