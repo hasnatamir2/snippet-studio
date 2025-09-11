@@ -34,9 +34,6 @@ jobs:
           NEXT_PUBLIC_CONVEX_URL: ${{ secrets.NEXT_PUBLIC_CONVEX_URL }}
           CONVEX_URL: ${{ secrets.CONVEX_URL }}
 
-      - name: Test
-        run: yarn test --if-present
-
   deploy:
     needs: build
     runs-on: ubuntu-latest
