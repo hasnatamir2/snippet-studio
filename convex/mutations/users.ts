@@ -83,6 +83,6 @@ export const updateSubscriptionTier = internalMutation({
         subscriptionTier: v.union(v.literal("free"), v.literal("pro")),
     },
     handler: async (ctx, { userId, subscriptionTier }) => {
-        await ctx.db.patch(userId, { subscriptionTier });
+        await ctx.db.patch(userId, { subscriptionTier, cancelAt: Date.now() });
     },
 });
