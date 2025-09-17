@@ -4,7 +4,7 @@ import { useMutation } from "convex/react";
 import { toast } from "sonner";
 import hljs from "highlight.js";
 import { useForm } from "react-hook-form";
-import { iso, z } from "zod";
+import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAuth } from "@clerk/nextjs"; // 👈 Clerk hook
 import { Copy, Lock } from "lucide-react";
