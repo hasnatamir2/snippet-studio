@@ -1,5 +1,5 @@
 "use client";
-import { useAuth } from "@clerk/nextjs";
+import { SignInButton, useAuth } from "@clerk/nextjs";
 import { useState, useEffect } from "react";
 
 import { useAction, useQuery } from "convex/react";
@@ -7,6 +7,7 @@ import { useAction, useQuery } from "convex/react";
 import { StripeWrapper } from "@/components/stripe/stripe-wrapper";
 import StripePaymentForm from "@/components/stripe/payment-form";
 import { api } from "../../../../convex/_generated/api";
+import { Button } from "@/components/ui/button";
 
 const PaymentPage = () => {
     const { userId } = useAuth();
@@ -30,6 +31,15 @@ const PaymentPage = () => {
             init(customer.stripeCustomerId);
     }, [createPaymentIntent, customer]);
 
+    if (!userId)
+        return (
+            <div>
+                <h4>Please sign-in before completing Check-out</h4>
+                <SignInButton>
+                    <Button className='w-full'>Sign in</Button>
+                </SignInButton>
+            </div>
+        );
     if (!clientSecret) return <div>Loading...</div>;
 
     return (
