@@ -140,3 +140,24 @@ export const cancelSubscription = action({
         );
     },
 });
+
+export const createPaymentIntent = action({
+  args: { priceId: v.string(), customerId: v.string() },
+  handler: async (_, { priceId, customerId }) => {
+    // Look up price to get amount
+    const price = await stripe.prices.retrieve(priceId);
+
+    if (!price.unit_amount) {
+      throw new Error("Price has no amount");
+    }
+
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: price.unit_amount,
+      currency: price.currency,
+      customer: customerId,
+      automatic_payment_methods: { enabled: true },
+    });
+
+    return { clientSecret: paymentIntent.client_secret };
+  },
+});
