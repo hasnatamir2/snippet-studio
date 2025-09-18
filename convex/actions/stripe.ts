@@ -156,10 +156,10 @@ export const createSubscription = action({
                 items: [{ price: priceId }],
                 payment_behavior: "default_incomplete",
                 expand: ["latest_invoice", "latest_invoice.payment_intent"],
+            },
+            {
+                idempotencyKey,
             }
-            // {
-            //     idempotencyKey,
-            // }
         );
 
         const invoice = subscription.latest_invoice as Stripe.Invoice & {
