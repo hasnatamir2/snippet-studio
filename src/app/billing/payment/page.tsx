@@ -17,6 +17,7 @@ const PaymentPage = () => {
     const createSubscription = useAction(api.actions.stripe.createSubscription);
 
     const [clientSecret, setClientSecret] = useState<string | null>(null);
+    const [subscriptionId, setSubscriptionId] = useState<string | null>(null);
 
     useEffect(() => {
         const init = async () => {
@@ -24,6 +25,7 @@ const PaymentPage = () => {
                 priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_PRO_MONTHLY!,
                 clerkId: userId ?? "",
             });
+            setSubscriptionId(res.subscriptionId);
             setClientSecret(res.clientSecret);
         };
         if (userId) init();
@@ -42,7 +44,7 @@ const PaymentPage = () => {
 
     return (
         <StripeWrapper clientSecret={clientSecret}>
-            <StripePaymentForm />
+            <StripePaymentForm subscriptionId={subscriptionId} />
         </StripeWrapper>
     );
 };

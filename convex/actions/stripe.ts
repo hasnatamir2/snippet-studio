@@ -156,10 +156,10 @@ export const createSubscription = action({
                 items: [{ price: priceId }],
                 payment_behavior: "default_incomplete",
                 expand: ["latest_invoice", "latest_invoice.payment_intent"],
-            },
-            {
-                idempotencyKey,
             }
+            // {
+            //     idempotencyKey,
+            // }
         );
 
         const invoice = subscription.latest_invoice as Stripe.Invoice & {
@@ -236,5 +236,62 @@ export const createPaymentIntent = action({
         });
 
         return { clientSecret: paymentIntent.client_secret };
+    },
+});
+
+export const finalizeSubscription = action({
+    args: { subscriptionId: v.string(), paymentMethodId: v.string() },
+    handler: async (ctx, { subscriptionId, paymentMethodId }) => {
+        const subscription =
+            await stripe.subscriptions.retrieve(subscriptionId);
+
+        await stripe.customers.update(subscription.customer as string, {
+            invoice_settings: {
+                default_payment_method: paymentMethodId,
+            },
+        });
+        // 2. Retrieve the latest invoice for this subscription
+        if (typeof subscription.latest_invoice === "string") {
+            const latestInvoice = await stripe.invoices.retrieve(
+                subscription.latest_invoice
+            );
+
+            // 3. If the invoice isn't paid, pay it
+            if (latestInvoice.status === "open") {
+                const paidInvoice = await stripe.invoices.pay(
+                    latestInvoice.id as string,
+                    {
+                        payment_method: paymentMethodId,
+                        expand: ["payment_intent"],
+                    }
+                );
+
+                // If additional authentication is required
+                const paidInvoiceWithIntent = paidInvoice as Stripe.Invoice & {
+                    payment_intent?: Stripe.PaymentIntent;
+                };
+
+                if (
+                    paidInvoiceWithIntent.payment_intent &&
+                    paidInvoiceWithIntent.payment_intent.status ===
+                        "requires_action"
+                ) {
+                    return {
+                        clientSecret:
+                            paidInvoiceWithIntent.payment_intent.client_secret,
+                        requiresAction: true,
+                    };
+                }
+                return {
+                    success: true,
+                    status: "subscription_active",
+                };
+            }
+        } else {
+            return {
+                success: true,
+                status: "subscription_active",
+            };
+        }
     },
 });
