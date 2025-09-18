@@ -29,9 +29,9 @@ export const webhook = action({
             case "checkout.session.completed":
             case "customer.subscription.updated": {
                 const session = event.data.object as Stripe.Checkout.Session;
-                if (session.subscription) {
+                if (session.id) {
                     const subscription = await stripe.subscriptions.retrieve(
-                        session.subscription as string
+                        session.id as string
                     );
                     const customerId = subscription.customer as string;
                     // Find user by Stripe customerId
