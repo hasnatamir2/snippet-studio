@@ -2,7 +2,7 @@
 import { SignInButton, useAuth } from "@clerk/nextjs";
 import { useState, useEffect } from "react";
 
-import { useAction, useQuery } from "convex/react";
+import { useAction } from "convex/react";
 
 import { StripeWrapper } from "@/components/stripe/stripe-wrapper";
 import StripePaymentForm from "@/components/stripe/payment-form";
@@ -14,22 +14,20 @@ const PaymentPage = () => {
     const createPaymentIntent = useAction(
         api.actions.stripe.createPaymentIntent
     );
-    const customer = useQuery(api.queries.user.getUserByClerkId, {
-        clerkId: userId || "",
-    });
+    const createSubscription = useAction(api.actions.stripe.createSubscription);
+
     const [clientSecret, setClientSecret] = useState<string | null>(null);
 
     useEffect(() => {
-        const init = async (customerId: string) => {
-            const res = await createPaymentIntent({
+        const init = async () => {
+            const res = await createSubscription({
                 priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_PRO_MONTHLY!,
-                customerId,
+                clerkId: userId ?? "",
             });
             setClientSecret(res.clientSecret);
         };
-        if (customer && customer.stripeCustomerId)
-            init(customer.stripeCustomerId);
-    }, [createPaymentIntent, customer]);
+        if (userId) init();
+    }, [createPaymentIntent, createSubscription, userId]);
 
     if (!userId)
         return (

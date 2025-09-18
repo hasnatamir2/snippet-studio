@@ -105,16 +105,84 @@ export const createCheckout = action({
             }
             customerId = customer.id;
         }
-        const session = await stripe.checkout.sessions.create({
-            mode: "subscription",
-            payment_method_types: ["card"],
-            line_items: [{ price: priceId, quantity: 1 }],
-            customer: customerId,
-            success_url: `${process.env.APP_URL}/`,
-            cancel_url: `${process.env.APP_URL}/billing`,
-        });
+        const idempotencyKey = `sub_${customerId}_${priceId}`;
+
+        const session = await stripe.checkout.sessions.create(
+            {
+                mode: "subscription",
+                payment_method_types: ["card"],
+                line_items: [{ price: priceId, quantity: 1 }],
+                customer: customerId,
+                success_url: `${process.env.APP_URL}/`,
+                cancel_url: `${process.env.APP_URL}/billing`,
+            },
+            { idempotencyKey }
+        );
 
         return { url: session.url };
+    },
+});
+
+export const createSubscription = action({
+    args: { priceId: v.string(), clerkId: v.string() },
+    handler: async (ctx, { priceId, clerkId }) => {
+        const user = await ctx.runQuery(
+            internal.queries.user._getUserByClerkId,
+            { clerkId }
+        );
+        if (!user) throw new ConvexError("Not authenticated");
+
+        let customerId = user?.stripeCustomerId as string;
+
+        if (!customerId) {
+            const customer = await stripe.customers.create({
+                email: user.email ?? undefined,
+            });
+            if (user) {
+                await ctx.runMutation(
+                    internal.mutations.users.updateCustomerStripeId,
+                    {
+                        userId: user._id,
+                        stripeCustomerId: customer.id,
+                    }
+                );
+            }
+            customerId = customer.id;
+        }
+        const idempotencyKey = `sub_${customerId}_${priceId}`;
+        const subscription = await stripe.subscriptions.create(
+            {
+                customer: customerId,
+                items: [{ price: priceId }],
+                payment_behavior: "default_incomplete",
+                expand: ["latest_invoice", "latest_invoice.payment_intent"],
+            },
+            {
+                idempotencyKey,
+            }
+        );
+
+        const invoice = subscription.latest_invoice as Stripe.Invoice & {
+            payment_intent?: Stripe.PaymentIntent;
+        };
+
+        let clientSecret =
+            invoice?.payment_intent?.client_secret ??
+            (subscription.pending_setup_intent as Stripe.SetupIntent)
+                ?.client_secret ??
+            null;
+        if (!clientSecret) {
+            const setupIntent = await stripe.setupIntents.create({
+                customer: customerId,
+                payment_method_types: ["card"],
+                usage: "off_session", // Important for future subscription payments
+            });
+            clientSecret = setupIntent.client_secret;
+        }
+        return {
+            clientSecret,
+            subscriptionId: subscription.id,
+        };
     },
 });
 
@@ -142,22 +210,31 @@ export const cancelSubscription = action({
 });
 
 export const createPaymentIntent = action({
-  args: { priceId: v.string(), customerId: v.string() },
-  handler: async (_, { priceId, customerId }) => {
-    // Look up price to get amount
-    const price = await stripe.prices.retrieve(priceId);
+    args: { priceId: v.string(), clerkId: v.string() },
+    handler: async (ctx, { priceId, clerkId }) => {
+        // Look up price to get amount
+        const user = await ctx.runQuery(
+            internal.queries.user._getUserByClerkId,
+            { clerkId }
+        );
+        if (!user) throw new ConvexError("Not authenticated");
 
-    if (!price.unit_amount) {
-      throw new Error("Price has no amount");
-    }
+        const customerId = user?.stripeCustomerId as string;
 
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount: price.unit_amount,
-      currency: price.currency,
-      customer: customerId,
-      automatic_payment_methods: { enabled: true },
-    });
+        const price = await stripe.prices.retrieve(priceId);
 
-    return { clientSecret: paymentIntent.client_secret };
-  },
+        if (!price.unit_amount) {
+            throw new Error("Price has no amount");
+        }
+
+        const paymentIntent = await stripe.paymentIntents.create({
+            amount: price.unit_amount,
+            currency: price.currency,
+            customer: customerId,
+            setup_future_usage: "off_session",
+            automatic_payment_methods: { enabled: true },
+        });
+
+        return { clientSecret: paymentIntent.client_secret };
+    },
 });
