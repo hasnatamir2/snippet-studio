@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { query } from "../_generated/server";
+import { query, internalQuery } from "../_generated/server";
 
 export const getSnippets = query({
     args: { clerkId: v.string() },
@@ -80,6 +80,13 @@ export const getPrivateSnippetCount = query({
     },
 });
 
+export const _getSnippetForAi = internalQuery({
+    args: { snippetId: v.id("snippets") },
+    handler: async (ctx, { snippetId }) => {
+        return ctx.db.get(snippetId);
+    },
+});
+
 export const getUsage = query({
     args: { clerkId: v.string() },
     handler: async (ctx, { clerkId }) => {
@@ -97,7 +104,7 @@ export const getUsage = query({
 
         return {
             count: snippets.length,
-            limit: user.subscriptionTier === "pro" ? Infinity : 9,
+            limit: user.subscriptionTier === "pro" ? Infinity : 30,
         };
     },
 });

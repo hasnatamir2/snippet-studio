@@ -14,28 +14,19 @@ export function CodeBlock({
     const codeRef = useRef<HTMLElement>(null);
 
     useEffect(() => {
-        if (codeRef.current) {
-            // reset old highlight
-            codeRef.current.removeAttribute("data-highlighted");
-            codeRef.current.classList.remove(
-                ...Array.from(codeRef.current.classList).filter((c) =>
-                    c.startsWith("hljs")
-                )
-            );
-
-            // re-highlight
-            hljs.highlightElement(codeRef.current);
-        }
+        const el = codeRef.current;
+        if (!el) return;
+        // Set raw text first so hljs always gets clean input
+        el.textContent = code;
+        el.removeAttribute("data-highlighted");
+        el.className = language ? `language-${language}` : "";
+        hljs.highlightElement(el);
     }, [code, language]);
 
     return (
-        <pre className='rounded-lg text-sm bg-muted overflow-x-auto'>
-            <code
-                ref={codeRef}
-                className={language ? `language-${language}` : ""}
-            >
-                {code}
-            </code>
+        <pre className='rounded-lg text-sm overflow-x-auto m-0 h-full'>
+            {/* No React children — content is set imperatively via ref */}
+            <code ref={codeRef} />
         </pre>
     );
 }

@@ -1,4 +1,4 @@
-import { mutation } from "../_generated/server";
+import { mutation, internalMutation } from "../_generated/server";
 import { ConvexError, v } from "convex/values";
 
 export const createSnippet = mutation({
@@ -7,8 +7,10 @@ export const createSnippet = mutation({
         content: v.string(),
         language: v.string(),
         isPublic: v.boolean(),
+        tags: v.optional(v.array(v.string())),
+        description: v.optional(v.string()),
     },
-    handler: async (ctx, { title, content, language, isPublic }) => {
+    handler: async (ctx, { title, content, language, isPublic, tags, description }) => {
         const now = Date.now();
         const clerkUserId = await ctx.auth.getUserIdentity();
         if (!clerkUserId) throw new ConvexError("Not authenticated");
@@ -29,7 +31,7 @@ export const createSnippet = mutation({
             .collect()
             .then((snips) => snips.length);
 
-        if (user.subscriptionTier !== "pro" && snippetCount >= 9) {
+        if (user.subscriptionTier !== "pro" && snippetCount >= 30) {
             throw new ConvexError(
                 "Free plan limit reached. Upgrade to Pro for unlimited snippets."
             );
@@ -41,6 +43,8 @@ export const createSnippet = mutation({
             content,
             language,
             isPublic,
+            tags: tags ?? [],
+            description,
             createdAt: now,
             updatedAt: now,
         });
@@ -82,10 +86,12 @@ export const updateSnippet = mutation({
         content: v.string(),
         language: v.string(),
         isPublic: v.boolean(),
+        tags: v.optional(v.array(v.string())),
+        description: v.optional(v.string()),
     },
     handler: async (
         ctx,
-        { snippetId, userId, title, content, isPublic, language }
+        { snippetId, userId, title, content, isPublic, language, tags, description }
     ) => {
         const snippet = await ctx.db.get(snippetId);
         if (!snippet) {
@@ -99,6 +105,8 @@ export const updateSnippet = mutation({
             content,
             language,
             isPublic,
+            tags: tags ?? [],
+            description,
             updatedAt: Date.now(),
         });
         await ctx.db.insert("auditLogs", {
@@ -107,6 +115,13 @@ export const updateSnippet = mutation({
             metadata: { snippetId },
             createdAt: Date.now(),
         });
+    },
+});
+
+export const cacheAiExplanation = internalMutation({
+    args: { snippetId: v.id("snippets"), explanation: v.string() },
+    handler: async (ctx, { snippetId, explanation }) => {
+        await ctx.db.patch(snippetId, { aiExplanation: explanation });
     },
 });
 
