@@ -95,6 +95,7 @@ const CodeInput = ({
                     onClick={() => setTheme((t) => (t === "dark" ? "light" : "dark"))}
                     className='p-1 rounded hover:bg-muted/80 text-muted-foreground hover:text-foreground transition-colors'
                     title={theme === "dark" ? "Light mode" : "Dark mode"}
+                    aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
                 >
                     {theme === "dark" ? <Sun className='w-3.5 h-3.5' /> : <Moon className='w-3.5 h-3.5' />}
                 </button>
@@ -107,6 +108,7 @@ const CodeInput = ({
                         key={value}
                         type='button'
                         onClick={() => setFontSize(value)}
+                        aria-label={`Set font size ${label}`}
                         className={`px-1.5 py-0.5 rounded text-[10px] font-mono font-medium transition-colors ${
                             fontSize === value
                                 ? "bg-primary text-primary-foreground"
@@ -124,6 +126,7 @@ const CodeInput = ({
                     type='button'
                     onClick={() => setShowLineNumbers((n) => !n)}
                     title='Toggle line numbers'
+                    aria-label={showLineNumbers ? "Hide line numbers" : "Show line numbers"}
                     className={`p-1 rounded transition-colors hover:bg-muted/80 ${
                         showLineNumbers ? "text-foreground" : "text-muted-foreground/40"
                     }`}

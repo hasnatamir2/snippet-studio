@@ -38,7 +38,7 @@ export function SnippetUsageTracker() {
                             Total
                         </span>
                     </div>
-                    <p className='text-3xl font-bold'>{count}</p>
+                    <p className='text-3xl font-bold tabular-nums'>{count}</p>
                     <p className='text-xs text-muted-foreground mt-0.5'>
                         snippets
                     </p>
@@ -51,7 +51,7 @@ export function SnippetUsageTracker() {
                             Public
                         </span>
                     </div>
-                    <p className='text-3xl font-bold'>{publicCount ?? 0}</p>
+                    <p className='text-3xl font-bold tabular-nums'>{publicCount ?? 0}</p>
                     <p className='text-xs text-muted-foreground mt-0.5'>
                         shared
                     </p>
@@ -64,7 +64,7 @@ export function SnippetUsageTracker() {
                             Private
                         </span>
                     </div>
-                    <p className='text-3xl font-bold'>{privateCount ?? 0}</p>
+                    <p className='text-3xl font-bold tabular-nums'>{privateCount ?? 0}</p>
                     <p className='text-xs text-muted-foreground mt-0.5'>
                         only you
                     </p>

@@ -113,7 +113,7 @@ export default function Home() {
                         {/* Left: copy */}
                         <div className='text-center md:text-left'>
                             <div className='inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/20 text-xs text-white/60 mb-6'>
-                                <span className='w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse' />
+                                <span className='w-1.5 h-1.5 rounded-full bg-green-400 motion-safe:animate-pulse' />
                                 Free to start — no credit card required
                             </div>
 

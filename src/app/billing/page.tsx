@@ -47,7 +47,7 @@ const BillingPage = () => {
                 </p>
                 {isActive && (
                     <div className='mt-5 inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-green-500/20 bg-green-500/10 text-green-500 text-sm font-medium'>
-                        <span className='w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse' />
+                        <span className='w-1.5 h-1.5 rounded-full bg-green-500 motion-safe:animate-pulse' />
                         Pro plan active
                     </div>
                 )}

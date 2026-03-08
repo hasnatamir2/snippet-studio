@@ -13,7 +13,14 @@ import { TagInput } from "./tag-input";
 import { api } from "../../../convex/_generated/api";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import CodeInput from "../code-block/code-input";
+import dynamic from "next/dynamic";
+
+const CodeInput = dynamic(() => import("../code-block/code-input"), {
+    ssr: false,
+    loading: () => (
+        <div className='h-[200px] rounded-lg border bg-muted motion-safe:animate-pulse' />
+    ),
+});
 import {
     Select,
     SelectContent,
@@ -195,6 +202,8 @@ export default function SnippetModule({
                                             placeholder='Snippet title…'
                                             disabled={!isOwner}
                                             className='h-9'
+                                            autoComplete="off"
+                                            name="snippet-title"
                                         />
                                         {isOwner && (
                                             <Button
@@ -204,6 +213,7 @@ export default function SnippetModule({
                                                 onClick={handleGenerateTitle}
                                                 disabled={generatingTitle}
                                                 title='Generate title with AI'
+                                                aria-label='Generate title with AI'
                                                 className='h-9 w-9 shrink-0'
                                             >
                                                 {generatingTitle ? (

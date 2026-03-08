@@ -124,8 +124,8 @@ const SnippetCard = (snip: ISnippet) => {
                     <div className='flex items-center'>
                         <code className='font-medium truncate max-w-[120px]'>{snip.title}</code>
 
-                        <Button variant='link' size='sm' onClick={editSnippet} className='px-1'>
-                            <Pencil className='w-3.5 h-3.5' />
+                        <Button variant='link' size='sm' onClick={editSnippet} className='px-1' aria-label="Edit snippet">
+                            <Pencil className='w-3.5 h-3.5' aria-hidden="true" />
                         </Button>
 
                         {/* Copy code button */}
@@ -134,18 +134,19 @@ const SnippetCard = (snip: ISnippet) => {
                             size='sm'
                             onClick={copyCodeToClipboard}
                             className='px-1'
+                            aria-label={copied ? "Copied" : "Copy code"}
                         >
                             {copied ? (
-                                <Check className='w-3.5 h-3.5 text-green-500' />
+                                <Check className='w-3.5 h-3.5 text-green-500' aria-hidden="true" />
                             ) : (
-                                <Copy className='w-3.5 h-3.5' />
+                                <Copy className='w-3.5 h-3.5' aria-hidden="true" />
                             )}
                         </Button>
 
                         <AlertDialog>
                             <AlertDialogTrigger asChild>
-                                <Button variant='link' size='sm' className='px-1'>
-                                    <Trash className='w-3.5 h-3.5' />
+                                <Button variant='link' size='sm' className='px-1' aria-label="Delete snippet">
+                                    <Trash className='w-3.5 h-3.5' aria-hidden="true" />
                                 </Button>
                             </AlertDialogTrigger>
                             <AlertDialogContent>
@@ -167,11 +168,11 @@ const SnippetCard = (snip: ISnippet) => {
                             </AlertDialogContent>
                         </AlertDialog>
 
-                        <Button variant='link' size='sm' onClick={updateVisibilty} className='px-1'>
+                        <Button variant='link' size='sm' onClick={updateVisibilty} className='px-1' aria-label={snip.isPublic ? "Make private" : "Make public"}>
                             {snip.isPublic ? (
-                                <LockOpen className='w-3.5 h-3.5' />
+                                <LockOpen className='w-3.5 h-3.5' aria-hidden="true" />
                             ) : (
-                                <Lock className='w-3.5 h-3.5' />
+                                <Lock className='w-3.5 h-3.5' aria-hidden="true" />
                             )}
                         </Button>
 
@@ -182,8 +183,9 @@ const SnippetCard = (snip: ISnippet) => {
                                     size="sm"
                                     className={`px-1 ${!snip.isPublic ? "opacity-40 pointer-events-none" : ""}`}
                                     disabled={!snip.isPublic}
+                                    aria-label="Share snippet"
                                 >
-                                    <Share className='w-3.5 h-3.5' />
+                                    <Share className='w-3.5 h-3.5' aria-hidden="true" />
                                 </Button>
                             </PopoverTrigger>
                             <PopoverContent className='w-80' align="end">
