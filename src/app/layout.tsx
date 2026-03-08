@@ -8,10 +8,61 @@ import { Toaster } from "@/components/ui/sonner";
 import { ErrorBoundary } from "@/components/error-boudary";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar/sidebar";
+import { ThemeProvider } from "@/components/theme-provider";
+
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://snippetstudio.dev";
 
 export const metadata: Metadata = {
-    title: "Snippet Studio",
-    description: "Share your code snippets with ease.",
+    metadataBase: new URL(APP_URL),
+    title: {
+        default: "Snippet Studio — Share Code Instantly",
+        template: "%s | Snippet Studio",
+    },
+    description:
+        "Create, highlight, and share beautiful code snippets in seconds. Syntax highlighting, AI tags, screenshot export, and instant sharing links — built for developers.",
+    keywords: [
+        "code snippets",
+        "snippet sharing",
+        "syntax highlighting",
+        "developer tools",
+        "code sharing",
+        "programming",
+        "snippet studio",
+    ],
+    authors: [{ name: "Snippet Studio" }],
+    creator: "Snippet Studio",
+    openGraph: {
+        type: "website",
+        locale: "en_US",
+        url: APP_URL,
+        siteName: "Snippet Studio",
+        title: "Snippet Studio — Share Code Instantly",
+        description:
+            "Create, highlight, and share beautiful code snippets in seconds. Syntax highlighting, AI tags, screenshot export, and instant sharing links.",
+        images: [
+            {
+                url: "/og-image.png",
+                width: 1200,
+                height: 630,
+                alt: "Snippet Studio — Share Code Instantly",
+            },
+        ],
+    },
+    twitter: {
+        card: "summary_large_image",
+        title: "Snippet Studio — Share Code Instantly",
+        description:
+            "Create, highlight, and share beautiful code snippets in seconds.",
+        images: ["/og-image.png"],
+        creator: "@snippetstudio",
+    },
+    icons: {
+        icon: [
+            { url: "/icon.svg", type: "image/svg+xml" },
+        ],
+        apple: "/apple-touch-icon.png",
+    },
+    manifest: "/site.webmanifest",
 };
 
 export default function RootLayout({
@@ -21,23 +72,25 @@ export default function RootLayout({
 }>) {
     return (
         <ClerkProvider publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY!}>
-            <SidebarProvider>
-                <html lang='en'>
-                    <AppSidebar />
-                    <body>
+            <html lang='en' suppressHydrationWarning>
+                <body>
+                    <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
                         <ErrorBoundary>
                             <ConvexClientProvider>
-                                <Toaster />
-                                <ConvexUserBootstrapper />
-                                <SidebarInset>
-                                    <Header />
-                                    {children}
-                                </SidebarInset>
+                                <SidebarProvider defaultOpen={false}>
+                                    <AppSidebar />
+                                    <SidebarInset>
+                                        <Toaster />
+                                        <ConvexUserBootstrapper />
+                                        <Header />
+                                        {children}
+                                    </SidebarInset>
+                                </SidebarProvider>
                             </ConvexClientProvider>
                         </ErrorBoundary>
-                    </body>
-                </html>
-            </SidebarProvider>
+                    </ThemeProvider>
+                </body>
+            </html>
         </ClerkProvider>
     );
 }

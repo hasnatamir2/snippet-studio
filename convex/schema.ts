@@ -23,6 +23,8 @@ export default defineSchema({
     content: v.string(),
     language: v.string(),
     tags: v.optional(v.array(v.string())),
+    description: v.optional(v.string()),
+    aiExplanation: v.optional(v.string()),
     isPublic: v.boolean(),
     createdAt: v.number(),
     updatedAt: v.number(),

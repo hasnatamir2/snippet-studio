@@ -1,0 +1,17 @@
+{
+  "name": "Snippet Studio",
+  "short_name": "SnippetStudio",
+  "description": "Create, highlight, and share beautiful code snippets instantly.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f111a",
+  "theme_color": "#0EA5E9",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
