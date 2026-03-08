@@ -47,7 +47,7 @@ export default function SnippetsListClient() {
                 {[...Array(3)].map((_, i) => (
                     <div
                         key={i}
-                        className='h-24 rounded-xl border bg-card animate-pulse'
+                        className='h-24 rounded-xl border bg-card motion-safe:animate-pulse'
                     />
                 ))}
             </div>

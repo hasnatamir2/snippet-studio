@@ -231,6 +231,7 @@ export function SnippetScreenshot({
                             <button
                                 key={g.label}
                                 title={g.label}
+                                aria-label={g.label}
                                 className={`w-8 h-8 rounded-full border-2 shrink-0 transition-all ${
                                     gradient === g.value
                                         ? "border-primary scale-110 shadow-md"
