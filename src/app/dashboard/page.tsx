@@ -1,50 +1,65 @@
 import React, { Suspense } from "react";
 import { currentUser } from "@clerk/nextjs/server";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import SnippetsList from "@/components/snippets/snippets-list";
 import { SnippetUsageTracker } from "@/components/snippets/snippet-usage-tracker";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { Plus } from "lucide-react";
 
 export default async function DashboardPage() {
     const user = await currentUser();
     if (!user) {
         return (
-            <div className='py-12 text-center'>
+            <div className='py-20 text-center'>
                 <h2 className='text-2xl font-semibold'>Please sign in</h2>
-                <p className='mt-4'>
+                <p className='mt-3 text-muted-foreground'>
                     Sign in to manage your snippets and workspace.
                 </p>
             </div>
         );
     }
 
+    const name =
+        user.firstName ??
+        user.emailAddresses[0].emailAddress.split("@")[0];
+
     return (
-        <div className='mx-4 my-6'>
-            <div>
-                <h2 className='text-2xl font-semibold'>
-                    Welcome,{" "}
-                    {user.firstName ?? user.emailAddresses[0].emailAddress}
-                </h2>
+        <div className='max-w-6xl mx-auto px-4 py-8'>
+            {/* Header */}
+            <div className='flex items-center justify-between mb-8'>
+                <div>
+                    <h1 className='text-2xl font-bold'>
+                        Welcome back, {name}
+                    </h1>
+                    <p className='text-sm text-muted-foreground mt-0.5'>
+                        Manage your code snippets
+                    </p>
+                </div>
+                <Button asChild className='gap-2'>
+                    <Link href='/new'>
+                        <Plus className='w-4 h-4' />
+                        New snippet
+                    </Link>
+                </Button>
             </div>
-            <Tabs defaultValue='account' className='w-full'>
-                <TabsList>
-                    <TabsTrigger value='account'>Account</TabsTrigger>
-                    <TabsTrigger value='snippets'>My Snippets</TabsTrigger>
-                </TabsList>
-                <TabsContent value='account'>
-                    <div className='mt-4 flex w-full'>
-                        <Suspense fallback={<p>Loading usage...</p>}>
-                            <SnippetUsageTracker />
-                        </Suspense>
-                    </div>
-                </TabsContent>
-                <TabsContent value='snippets'>
-                    <div className='mt-4 flex w-full'>
-                        <Suspense fallback={<p>Loading snippets...</p>}>
-                            <SnippetsList />
-                        </Suspense>
-                    </div>
-                </TabsContent>
-            </Tabs>
+
+            {/* Stats */}
+            <Suspense fallback={null}>
+                <SnippetUsageTracker />
+            </Suspense>
+
+            {/* Snippets */}
+            <div className='mt-8'>
+                <Suspense
+                    fallback={
+                        <p className='text-muted-foreground text-sm'>
+                            Loading snippets…
+                        </p>
+                    }
+                >
+                    <SnippetsList />
+                </Suspense>
+            </div>
         </div>
     );
 }

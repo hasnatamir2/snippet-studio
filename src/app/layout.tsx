@@ -6,8 +6,6 @@ import { ConvexUserBootstrapper } from "@/components/convex/convex-user-bootstra
 import { Header } from "@/components/header";
 import { Toaster } from "@/components/ui/sonner";
 import { ErrorBoundary } from "@/components/error-boudary";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/app-sidebar/sidebar";
 import { ThemeProvider } from "@/components/theme-provider";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://snippetstudio.dev";
@@ -77,15 +75,10 @@ export default function RootLayout({
                     <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
                         <ErrorBoundary>
                             <ConvexClientProvider>
-                                <SidebarProvider defaultOpen={false}>
-                                    <AppSidebar />
-                                    <SidebarInset>
-                                        <Toaster />
-                                        <ConvexUserBootstrapper />
-                                        <Header />
-                                        {children}
-                                    </SidebarInset>
-                                </SidebarProvider>
+                                <Toaster />
+                                <ConvexUserBootstrapper />
+                                <Header />
+                                {children}
                             </ConvexClientProvider>
                         </ErrorBoundary>
                     </ThemeProvider>

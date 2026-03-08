@@ -30,7 +30,7 @@ export default function HeroPreview() {
     }, []);
 
     return (
-        <div className='rounded-xl overflow-hidden shadow-2xl border border-white/10'>
+        <div className='rounded-xl overflow-hidden shadow-2xl border border-white/10 max-w-full'>
             {/* macOS title bar */}
             <div className='flex items-center gap-1.5 bg-[#1e1e1e] px-4 py-3'>
                 <span className='w-3 h-3 rounded-full bg-[#ff5f57]' />
@@ -53,7 +53,7 @@ export default function HeroPreview() {
                     highlightActiveLine: false,
                     highlightActiveLineGutter: false,
                 }}
-                className='text-sm'
+                className='text-sm overflow-x-auto'
             />
         </div>
     );

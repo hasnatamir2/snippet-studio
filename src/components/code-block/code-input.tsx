@@ -86,9 +86,9 @@ const CodeInput = ({
     }, [language]);
 
     return (
-        <div className='relative rounded-lg border overflow-hidden'>
+        <div className='relative rounded-lg border overflow-hidden w-full max-w-full'>
             {/* Floating controls — overlaid top-right of the editor */}
-            <div className='absolute top-2 right-2 z-10 flex items-center gap-0.5 bg-background/80 dark:bg-zinc-900/80 backdrop-blur-sm rounded-md border px-1.5 py-1 shadow-sm'>
+            <div className='absolute top-2 right-2 z-10 flex items-center gap-0.5 bg-background/80 dark:bg-zinc-900/80 backdrop-blur-sm rounded-md border px-1.5 py-1 shadow-sm max-w-[calc(100%-1rem)] overflow-x-auto'>
                 {/* Theme toggle */}
                 <button
                     type='button'
@@ -133,8 +133,8 @@ const CodeInput = ({
 
                 {onSave && (
                     <>
-                        <div className='w-px h-4 bg-border mx-0.5' />
-                        <kbd className='text-[9px] text-muted-foreground px-1 font-mono select-none'>⌘S</kbd>
+                        <div className='w-px h-4 bg-border mx-0.5 hidden sm:block' />
+                        <kbd className='text-[9px] text-muted-foreground px-1 font-mono select-none hidden sm:inline'>⌘S</kbd>
                     </>
                 )}
             </div>

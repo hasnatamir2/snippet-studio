@@ -50,12 +50,12 @@ const SnippetPage = () => {
     const isOwner = isSnippet && dbUser?._id === (snippet as ISnippet).userId;
 
     return (
-        <div className='max-w-4xl min-w-3xl mx-auto py-8 px-4'>
+        <div className='max-w-4xl w-full mx-auto py-8 px-4'>
             {isSnippet ? (
                 <>
                     {/* Page header */}
-                    <div className='flex items-center justify-between gap-4 mb-4'>
-                        <div className='flex items-center gap-2 min-w-0'>
+                    <div className='flex flex-wrap items-start justify-between gap-3 mb-4'>
+                        <div className='flex items-center gap-2 min-w-0 flex-1 max-md:hidden'>
                             <h1 className='text-lg font-semibold truncate'>
                                 {(snippet as ISnippet).title || "Untitled"}
                             </h1>
@@ -65,7 +65,7 @@ const SnippetPage = () => {
                         </div>
 
                         {/* Action toolbar */}
-                        <div className='flex items-center shrink-0 bg-muted/50 border rounded-xl p-1 gap-0.5'>
+                        <div className='flex items-center shrink-0 bg-muted/50 border rounded-xl p-1 gap-0.5 overflow-x-auto justify-evenly md:max-w-full max-md:w-full'>
                             <SnippetExplanation
                                 snippetId={(snippet as ISnippet)._id}
                                 content={(snippet as ISnippet).content}
@@ -77,6 +77,11 @@ const SnippetPage = () => {
                                 language={(snippet as ISnippet).language}
                                 title={(snippet as ISnippet).title}
                                 tags={(snippet as ISnippet).tags}
+                                snippetUrl={
+                                    (snippet as ISnippet).isPublic
+                                        ? `${process.env.NEXT_PUBLIC_APP_URL}/snippets/${(snippet as ISnippet)._id}`
+                                        : undefined
+                                }
                             />
                             {(snippet as ISnippet).isPublic && (
                                 <>

@@ -7,7 +7,7 @@ export default async function NewSnippetPage() {
     if (!user) redirect("/sign-in");
 
     return (
-        <div className='max-w-4xl min-w-3xl w-full mx-auto py-8 px-4'>
+        <div className='max-w-4xl w-full mx-auto py-8 px-4'>
             <h1 className='text-2xl font-bold mb-4'>New Snippet</h1>
             <SnippetModule isOwner />
         </div>
