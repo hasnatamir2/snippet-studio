@@ -5,7 +5,7 @@ import { api } from "../../../convex/_generated/api";
 import { useQuery } from "convex/react";
 import { useAuth } from "@clerk/nextjs";
 import SnippetCard from "./snippet-card";
-import { Lock, LockOpen, Search, X } from "lucide-react";
+import { Search, X, Plus } from "lucide-react";
 import { ISnippet } from "./snippet-form";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
@@ -19,12 +19,6 @@ export default function SnippetsListClient() {
     const snippets = useQuery(api.queries.snippets.getSnippets, {
         clerkId: userId || "",
     });
-    const publicSnippetCount = useQuery(
-        api.queries.snippets.getPublicSnippetCount
-    );
-    const privateSnippetCount = useQuery(
-        api.queries.snippets.getPrivateSnippetCount
-    );
 
     const availableLangs = useMemo((): string[] => {
         if (!snippets) return [];
@@ -45,24 +39,29 @@ export default function SnippetsListClient() {
         });
     }, [snippets, search, langFilter]);
 
-    if (!userId) return <div>Please sign in to see snippets.</div>;
+    if (!userId) return null;
 
     if (snippets === undefined || snippets === null) {
-        return <p className='text-gray-500'>Loading....</p>;
+        return (
+            <div className='space-y-2'>
+                {[...Array(3)].map((_, i) => (
+                    <div
+                        key={i}
+                        className='h-24 rounded-xl border bg-card animate-pulse'
+                    />
+                ))}
+            </div>
+        );
     }
 
     return (
-        <div className='w-full space-y-4'>
-            {/* Stats */}
-            <div className='flex gap-4'>
-                <p className='text-sm'>
-                    <LockOpen className='w-4 h-3 inline-block' /> Public:{" "}
-                    <span className='text-xl'>{publicSnippetCount || 0}</span>
-                </p>
-                <p className='text-sm'>
-                    <Lock className='w-4 h-3 inline-block' /> Private:{" "}
-                    <span className='text-xl'>{privateSnippetCount || 0}</span>
-                </p>
+        <div className='space-y-4'>
+            <div className='flex items-center justify-between'>
+                <h2 className='font-semibold'>My Snippets</h2>
+                <span className='text-xs text-muted-foreground'>
+                    {snippets.length}{" "}
+                    {snippets.length === 1 ? "snippet" : "snippets"}
+                </span>
             </div>
 
             {/* Search */}
@@ -117,7 +116,7 @@ export default function SnippetsListClient() {
 
             {/* Results */}
             {filteredSnippets.length > 0 ? (
-                <ul className='grid xl:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-2 flex-wrap w-full'>
+                <ul className='grid xl:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-2 w-full'>
                     {filteredSnippets.map((s: ISnippet) => (
                         <li key={s._id} className='col-span-1'>
                             <SnippetCard {...s} />
@@ -125,14 +124,22 @@ export default function SnippetsListClient() {
                     ))}
                 </ul>
             ) : snippets.length === 0 ? (
-                <div className='w-full justify-center gap-4 flex flex-col items-center py-12'>
-                    <p className='text-gray-600'>No snippets yet!</p>
+                <div className='rounded-xl border bg-card py-16 flex flex-col items-center gap-4 text-center'>
+                    <div className='w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center'>
+                        <Plus className='w-5 h-5 text-primary' />
+                    </div>
+                    <div>
+                        <p className='font-medium'>No snippets yet</p>
+                        <p className='text-sm text-muted-foreground mt-1'>
+                            Create your first snippet to get started.
+                        </p>
+                    </div>
                     <Button asChild>
-                        <Link href='/new'>Create your first snippet</Link>
+                        <Link href='/new'>Create snippet</Link>
                     </Button>
                 </div>
             ) : (
-                <div className='text-center py-12 text-muted-foreground'>
+                <div className='text-center py-12 text-muted-foreground text-sm'>
                     No snippets match your search.
                 </div>
             )}

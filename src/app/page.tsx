@@ -111,7 +111,7 @@ export default function Home() {
                 <div className='max-w-5xl mx-auto'>
                     <div className='grid md:grid-cols-2 gap-12 items-center'>
                         {/* Left: copy */}
-                        <div>
+                        <div className='text-center md:text-left'>
                             <div className='inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/20 text-xs text-white/60 mb-6'>
                                 <span className='w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse' />
                                 Free to start — no credit card required
@@ -132,7 +132,7 @@ export default function Home() {
                                 your code anywhere.
                             </p>
 
-                            <div className='mt-8 flex gap-3 flex-wrap'>
+                            <div className='mt-8 flex gap-3 flex-wrap justify-center md:justify-start'>
                                 <SignedOut>
                                     <SignUpButton>
                                         <Button size='lg' className='gap-2'>
@@ -160,8 +160,8 @@ export default function Home() {
                             </div>
                         </div>
 
-                        {/* Right: live CodeMirror demo */}
-                        <div>
+                        {/* Right: live CodeMirror demo — hidden on mobile to prevent overflow */}
+                        <div className='hidden md:block overflow-hidden'>
                             <HeroPreviewClient />
                         </div>
                     </div>

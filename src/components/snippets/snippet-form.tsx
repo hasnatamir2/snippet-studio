@@ -178,11 +178,11 @@ export default function SnippetModule({
         <Form {...form}>
         <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className='w-full flex flex-col gap-3'
+            className='w-full flex flex-col gap-3 min-w-0'
         >
             {/* Top metadata bar */}
             {isSignedIn && (
-                <div className='flex items-center gap-2 flex-wrap'>
+                <div className='flex items-center gap-2 flex-wrap min-w-0'>
                     <FormField
                         control={form.control}
                         name='title'
