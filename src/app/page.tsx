@@ -153,9 +153,9 @@ export default function Home() {
                                     size='lg'
                                     variant='outline'
                                     asChild
-                                    className='border-white/20 text-white bg-transparent hover:bg-white/10 hover:text-white'
+                                    className='border-white/40 text-white bg-white/10 hover:bg-white/20 hover:border-white/60 hover:text-white'
                                 >
-                                    <Link href='/new'>Try the editor</Link>
+                                    <Link href='/new'>Try the editor →</Link>
                                 </Button>
                             </div>
                         </div>
