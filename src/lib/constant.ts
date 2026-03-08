@@ -31,4 +31,4 @@ export const UniqueLangs = Array.from(
     ])
 );
 
-export const MAX_FREE_SNIPPETS = 9;
+export const MAX_FREE_SNIPPETS = 30;
