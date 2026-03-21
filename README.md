@@ -6,6 +6,7 @@ A modern code snippet manager that allows developers to create, save, organize, 
 [![Convex](https://img.shields.io/badge/Backend-Convex-blue)](https://convex.dev/)
 [![Stripe](https://img.shields.io/badge/Payments-Stripe-purple?logo=stripe)](https://stripe.com/)
 [![Clerk](https://img.shields.io/badge/Auth-Clerk-orange)](https://clerk.com/)
+[![Anthropic Claude](https://img.shields.io/badge/AI-Anthropic%20Claude-orange?logo=anthropic)](https://www.anthropic.com/)
 
 🚀 **Live Demo:** [snippet-studio-lovat.vercel.app](https://snippet-studio-lovat.vercel.app/)
 
